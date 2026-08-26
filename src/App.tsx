@@ -139,15 +139,55 @@ export default function App() {
     }
   };
 
+  // --- PERBAIKAN: STRUKTUR UTAMA DENGAN MENU BAWAH ---
   return (
     <PreferencesProvider>
-      {renderActivePage()}
+      <div className="flex flex-col h-[100dvh] w-full bg-[#121212] text-white overflow-hidden relative">
+        
+        {/* AREA KONTEN: Halaman (Home, Statistik, Profil) dirender di sini & bisa discroll */}
+        {/* pb-[90px] memastikan konten terbawah tidak tertutup menu */}
+        <main className="flex-1 overflow-y-auto pb-[90px] w-full">
+          {renderActivePage()}
+        </main>
+
+        {/* MENU NAVIGASI BAWAH: Permanen untuk semua halaman (kecuali Notifikasi) */}
+        {activePage !== 'notifikasi' && (
+          <nav className="fixed bottom-0 left-0 right-0 h-[70px] bg-[#1a1a1a] border-t border-white/10 z-50 flex justify-around items-center px-2 pb-2">
+            
+            <button onClick={() => setActivePage('home')} className={`flex flex-col items-center justify-center w-16 gap-1 mt-2 transition-colors ${activePage === 'home' ? 'text-white' : 'text-[#8a8a8a]'}`}>
+              <span className={`material-symbols-outlined text-[24px] ${activePage === 'home' ? 'icon-fill' : ''}`}>home</span>
+              <span className="text-[10px] font-medium tracking-wide">Beranda</span>
+            </button>
+
+            <button onClick={() => setActivePage('tasks')} className={`flex flex-col items-center justify-center w-16 gap-1 mt-2 transition-colors ${activePage === 'tasks' ? 'text-white' : 'text-[#8a8a8a]'}`}>
+              <span className={`material-symbols-outlined text-[24px] ${activePage === 'tasks' ? 'icon-fill' : ''}`}>assignment</span>
+              <span className="text-[10px] font-medium tracking-wide">Tugas</span>
+            </button>
+
+            <button onClick={() => setActivePage('schedule')} className={`flex flex-col items-center justify-center w-16 gap-1 mt-2 transition-colors ${activePage === 'schedule' ? 'text-white' : 'text-[#8a8a8a]'}`}>
+              <span className={`material-symbols-outlined text-[24px] ${activePage === 'schedule' ? 'icon-fill' : ''}`}>calendar_today</span>
+              <span className="text-[10px] font-medium tracking-wide">Jadwal</span>
+            </button>
+
+            <button onClick={() => setActivePage('stats')} className={`flex flex-col items-center justify-center w-[68px] gap-1 mt-2 transition-colors ${activePage === 'stats' ? 'text-white' : 'text-[#8a8a8a]'}`}>
+              <span className={`material-symbols-outlined text-[24px] ${activePage === 'stats' ? 'icon-fill' : ''}`}>bar_chart</span>
+              <span className="text-[10px] font-medium tracking-wide">Statistik</span>
+            </button>
+
+            <button onClick={() => setActivePage('profile')} className={`flex flex-col items-center justify-center w-16 gap-1 mt-2 transition-colors ${activePage === 'profile' ? 'text-white' : 'text-[#8a8a8a]'}`}>
+              <span className={`material-symbols-outlined text-[24px] ${activePage === 'profile' ? 'icon-fill' : ''}`}>person</span>
+              <span className="text-[10px] font-medium tracking-wide">Profil</span>
+            </button>
+
+          </nav>
+        )}
+      </div>
     </PreferencesProvider>
   );
 }
 
 // ============================================================================
-// KOMPONEN SPLASH SCREEN (Diekstrak agar kode utama tetap bersih)
+// KOMPONEN SPLASH SCREEN
 // ============================================================================
 const SplashScreen = () => (
   <div className="bg-[#eef5f7] min-h-screen flex items-center justify-center">
