@@ -252,32 +252,7 @@ export default function Notifikasi({
         </main>
 
         {/* --- NAVIGATION BOTTOM --- */}
-        <nav className="absolute bottom-0 w-full rounded-t-2xl bg-[#ffffff] dark:bg-[#1a1c1e] shadow-[0px_-4px_20px_rgba(0,0,0,0.05)] z-40 flex justify-around items-center px-[8px] py-[12px] border-t border-[#e9ecef] dark:border-[#44474e] transition-colors duration-300">
-          <button onClick={onNavigateHome} className="flex flex-col items-center text-[#636e72] dark:text-[#8e9099] hover:text-[#005da7] dark:hover:text-[#a4c9ff] px-4 py-2 transition-colors">
-            <span className="material-symbols-outlined text-[24px]">home</span>
-            <span className="font-bold text-[10px] mt-[2px]">{t.nav_home}</span>
-          </button>
-          
-          <button onClick={onNavigateTask} className="flex flex-col items-center text-[#636e72] dark:text-[#8e9099] hover:text-[#005da7] dark:hover:text-[#a4c9ff] px-4 py-2 transition-colors">
-            <span className="material-symbols-outlined text-[24px]">assignment</span>
-            <span className="font-bold text-[10px] mt-[2px]">{t.nav_tasks}</span>
-          </button>
-          
-          <button onClick={onNavigateSchedule} className="flex flex-col items-center text-[#636e72] dark:text-[#8e9099] hover:text-[#005da7] dark:hover:text-[#a4c9ff] px-4 py-2 transition-colors">
-            <span className="material-symbols-outlined text-[24px]">calendar_today</span>
-            <span className="font-bold text-[10px] mt-[2px]">{t.nav_schedule}</span>
-          </button>
-          
-          <button onClick={onNavigateStats} className="flex flex-col items-center text-[#636e72] dark:text-[#8e9099] hover:text-[#005da7] dark:hover:text-[#a4c9ff] px-4 py-2 transition-colors">
-            <span className="material-symbols-outlined text-[24px]">bar_chart</span>
-            <span className="font-bold text-[10px] mt-[2px]">{t.nav_stats}</span>
-          </button>
-          
-          <button onClick={onNavigateProfile} className="flex flex-col items-center text-[#636e72] dark:text-[#8e9099] hover:text-[#005da7] dark:hover:text-[#a4c9ff] px-4 py-2 transition-colors">
-            <span className="material-symbols-outlined text-[24px]">person</span>
-            <span className="font-bold text-[10px] mt-[2px]">{t.nav_profile}</span>
-          </button>
-        </nav>
+      
 
       </div>
     </div>

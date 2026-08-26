@@ -139,44 +139,54 @@ export default function App() {
     }
   };
 
-  // --- PERBAIKAN: STRUKTUR UTAMA DENGAN MENU BAWAH ---
+ // --- PERBAIKAN: STRUKTUR UTAMA DENGAN MENU BAWAH ---
   return (
     <PreferencesProvider>
-      <div className="flex flex-col h-[100dvh] w-full bg-[#121212] text-white overflow-hidden relative">
+      {/* Background utama sekarang mengikuti tema (Terang/Gelap) */}
+      <div className="flex flex-col h-[100dvh] w-full bg-[#f8f9fa] dark:bg-[#1a1c1e] text-[#161d1f] dark:text-[#e2e2e5] overflow-hidden relative transition-colors duration-300">
         
-        {/* AREA KONTEN: Halaman (Home, Statistik, Profil) dirender di sini & bisa discroll */}
-        {/* pb-[90px] memastikan konten terbawah tidak tertutup menu */}
-        <main className="flex-1 overflow-y-auto pb-[90px] w-full">
+        {/* AREA KONTEN */}
+        <main className="flex-1 overflow-y-auto pb-[90px] w-full no-scrollbar">
           {renderActivePage()}
         </main>
 
-        {/* MENU NAVIGASI BAWAH: Permanen untuk semua halaman (kecuali Notifikasi) */}
+        {/* MENU NAVIGASI BAWAH: Permanen & Auto-Theme */}
         {activePage !== 'notifikasi' && (
-          <nav className="fixed bottom-0 left-0 right-0 h-[70px] bg-[#1a1a1a] border-t border-white/10 z-50 flex justify-around items-center px-2 pb-2">
+          <nav className="fixed bottom-0 left-0 right-0 h-[75px] bg-[#ffffff] dark:bg-[#1a1c1e] border-t border-[#e9ecef] dark:border-[#44474e] shadow-[0px_-4px_20px_rgba(0,0,0,0.05)] z-50 flex justify-around items-center px-2 pb-2 transition-colors duration-300">
             
-            <button onClick={() => setActivePage('home')} className={`flex flex-col items-center justify-center w-16 gap-1 mt-2 transition-colors ${activePage === 'home' ? 'text-white' : 'text-[#8a8a8a]'}`}>
-              <span className={`material-symbols-outlined text-[24px] ${activePage === 'home' ? 'icon-fill' : ''}`}>home</span>
-              <span className="text-[10px] font-medium tracking-wide">Beranda</span>
+            <button onClick={() => setActivePage('home')} className="flex flex-col items-center justify-center w-16 gap-[2px] mt-2">
+              <div className={`${activePage === 'home' ? 'bg-[#d4e3ff] dark:bg-[#004883]/50 text-[#005da7] dark:text-[#a4c9ff]' : 'text-[#636e72] dark:text-[#8e9099] hover:text-[#005da7] dark:hover:text-[#a4c9ff]'} rounded-xl px-4 py-[2px] transition-colors flex items-center justify-center`}>
+                <span className={`material-symbols-outlined text-[24px] ${activePage === 'home' ? 'icon-fill' : ''}`}>home</span>
+              </div>
+              <span className={`text-[10px] font-bold tracking-wide ${activePage === 'home' ? 'text-[#005da7] dark:text-[#a4c9ff]' : 'text-[#636e72] dark:text-[#8e9099]'}`}>Beranda</span>
             </button>
 
-            <button onClick={() => setActivePage('tasks')} className={`flex flex-col items-center justify-center w-16 gap-1 mt-2 transition-colors ${activePage === 'tasks' ? 'text-white' : 'text-[#8a8a8a]'}`}>
-              <span className={`material-symbols-outlined text-[24px] ${activePage === 'tasks' ? 'icon-fill' : ''}`}>assignment</span>
-              <span className="text-[10px] font-medium tracking-wide">Tugas</span>
+            <button onClick={() => setActivePage('tasks')} className="flex flex-col items-center justify-center w-16 gap-[2px] mt-2">
+              <div className={`${activePage === 'tasks' ? 'bg-[#d4e3ff] dark:bg-[#004883]/50 text-[#005da7] dark:text-[#a4c9ff]' : 'text-[#636e72] dark:text-[#8e9099] hover:text-[#005da7] dark:hover:text-[#a4c9ff]'} rounded-xl px-4 py-[2px] transition-colors flex items-center justify-center`}>
+                <span className={`material-symbols-outlined text-[24px] ${activePage === 'tasks' ? 'icon-fill' : ''}`}>assignment</span>
+              </div>
+              <span className={`text-[10px] font-bold tracking-wide ${activePage === 'tasks' ? 'text-[#005da7] dark:text-[#a4c9ff]' : 'text-[#636e72] dark:text-[#8e9099]'}`}>Tugas</span>
             </button>
 
-            <button onClick={() => setActivePage('schedule')} className={`flex flex-col items-center justify-center w-16 gap-1 mt-2 transition-colors ${activePage === 'schedule' ? 'text-white' : 'text-[#8a8a8a]'}`}>
-              <span className={`material-symbols-outlined text-[24px] ${activePage === 'schedule' ? 'icon-fill' : ''}`}>calendar_today</span>
-              <span className="text-[10px] font-medium tracking-wide">Jadwal</span>
+            <button onClick={() => setActivePage('schedule')} className="flex flex-col items-center justify-center w-16 gap-[2px] mt-2">
+              <div className={`${activePage === 'schedule' ? 'bg-[#d4e3ff] dark:bg-[#004883]/50 text-[#005da7] dark:text-[#a4c9ff]' : 'text-[#636e72] dark:text-[#8e9099] hover:text-[#005da7] dark:hover:text-[#a4c9ff]'} rounded-xl px-4 py-[2px] transition-colors flex items-center justify-center`}>
+                <span className={`material-symbols-outlined text-[24px] ${activePage === 'schedule' ? 'icon-fill' : ''}`}>calendar_today</span>
+              </div>
+              <span className={`text-[10px] font-bold tracking-wide ${activePage === 'schedule' ? 'text-[#005da7] dark:text-[#a4c9ff]' : 'text-[#636e72] dark:text-[#8e9099]'}`}>Jadwal</span>
             </button>
 
-            <button onClick={() => setActivePage('stats')} className={`flex flex-col items-center justify-center w-[68px] gap-1 mt-2 transition-colors ${activePage === 'stats' ? 'text-white' : 'text-[#8a8a8a]'}`}>
-              <span className={`material-symbols-outlined text-[24px] ${activePage === 'stats' ? 'icon-fill' : ''}`}>bar_chart</span>
-              <span className="text-[10px] font-medium tracking-wide">Statistik</span>
+            <button onClick={() => setActivePage('stats')} className="flex flex-col items-center justify-center w-[68px] gap-[2px] mt-2">
+              <div className={`${activePage === 'stats' ? 'bg-[#d4e3ff] dark:bg-[#004883]/50 text-[#005da7] dark:text-[#a4c9ff]' : 'text-[#636e72] dark:text-[#8e9099] hover:text-[#005da7] dark:hover:text-[#a4c9ff]'} rounded-xl px-4 py-[2px] transition-colors flex items-center justify-center`}>
+                <span className={`material-symbols-outlined text-[24px] ${activePage === 'stats' ? 'icon-fill' : ''}`}>bar_chart</span>
+              </div>
+              <span className={`text-[10px] font-bold tracking-wide ${activePage === 'stats' ? 'text-[#005da7] dark:text-[#a4c9ff]' : 'text-[#636e72] dark:text-[#8e9099]'}`}>Statistik</span>
             </button>
 
-            <button onClick={() => setActivePage('profile')} className={`flex flex-col items-center justify-center w-16 gap-1 mt-2 transition-colors ${activePage === 'profile' ? 'text-white' : 'text-[#8a8a8a]'}`}>
-              <span className={`material-symbols-outlined text-[24px] ${activePage === 'profile' ? 'icon-fill' : ''}`}>person</span>
-              <span className="text-[10px] font-medium tracking-wide">Profil</span>
+            <button onClick={() => setActivePage('profile')} className="flex flex-col items-center justify-center w-16 gap-[2px] mt-2">
+              <div className={`${activePage === 'profile' ? 'bg-[#d4e3ff] dark:bg-[#004883]/50 text-[#005da7] dark:text-[#a4c9ff]' : 'text-[#636e72] dark:text-[#8e9099] hover:text-[#005da7] dark:hover:text-[#a4c9ff]'} rounded-xl px-4 py-[2px] transition-colors flex items-center justify-center`}>
+                <span className={`material-symbols-outlined text-[24px] ${activePage === 'profile' ? 'icon-fill' : ''}`}>person</span>
+              </div>
+              <span className={`text-[10px] font-bold tracking-wide ${activePage === 'profile' ? 'text-[#005da7] dark:text-[#a4c9ff]' : 'text-[#636e72] dark:text-[#8e9099]'}`}>Profil</span>
             </button>
 
           </nav>
@@ -186,6 +196,8 @@ export default function App() {
   );
 }
 
+// ============================================================================
+// KOMPONEN SPLASH SCREEN (Biarkan ini tetap di bawah)
 // ============================================================================
 // KOMPONEN SPLASH SCREEN
 // ============================================================================
