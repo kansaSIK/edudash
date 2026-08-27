@@ -514,14 +514,20 @@ export default function Tasks({
               <input required placeholder={t.task_title} className="w-full p-3 rounded-xl border border-[#c1c7d3] dark:border-[#44474e] bg-[#ffffff] dark:bg-[#1a1c1e] text-[#161d1f] dark:text-[#e2e2e5] focus:outline-[#005da7] text-sm transition-colors" value={taskTitle} onChange={e => setTaskTitle(e.target.value)} disabled={isSubmitting} />
               <input required placeholder={t.subject} className="w-full p-3 rounded-xl border border-[#c1c7d3] dark:border-[#44474e] bg-[#ffffff] dark:bg-[#1a1c1e] text-[#161d1f] dark:text-[#e2e2e5] focus:outline-[#005da7] text-sm transition-colors" value={taskSubject} onChange={e => setTaskSubject(e.target.value)} disabled={isSubmitting} />
               <textarea placeholder={t.notes} className="w-full p-3 rounded-xl border border-[#c1c7d3] dark:border-[#44474e] bg-[#ffffff] dark:bg-[#1a1c1e] text-[#161d1f] dark:text-[#e2e2e5] focus:outline-[#005da7] text-sm h-20 transition-colors" value={taskNote} onChange={e => setTaskNote(e.target.value)} disabled={isSubmitting} />
-              <div className="flex gap-3">
-                <input required type="date" className="w-1/2 p-3 rounded-xl border border-[#c1c7d3] dark:border-[#44474e] bg-[#ffffff] dark:bg-[#1a1c1e] text-[#161d1f] dark:text-[#e2e2e5] focus:outline-[#005da7] text-sm transition-colors" value={taskDeadline} onChange={e => setTaskDeadline(e.target.value)} disabled={isSubmitting} />
-                <select className="w-1/2 p-3 rounded-xl border border-[#c1c7d3] dark:border-[#44474e] bg-[#ffffff] dark:bg-[#1a1c1e] text-[#161d1f] dark:text-[#e2e2e5] focus:outline-[#005da7] text-sm transition-colors" value={taskPriority} onChange={e => setTaskPriority(e.target.value as any)} disabled={isSubmitting}>
-                  <option value="Rendah">{t.priority_low}</option>
-                  <option value="Sedang">{t.priority_med}</option>
-                  <option value="Tinggi">{t.priority_high}</option>
-                </select>
-              </div>
+            <div className="flex gap-3">
+  <div className="w-1/2 flex flex-col gap-1">
+    <label className="text-[10px] font-bold text-[#636e72] dark:text-[#c4c6d0] ml-1">Deadline</label>
+    <input required type="date" className="w-full p-3 rounded-xl border border-[#c1c7d3] dark:border-[#44474e] bg-[#ffffff] dark:bg-[#1a1c1e] text-[#161d1f] dark:text-[#e2e2e5] focus:outline-[#005da7] text-sm transition-colors" value={taskDeadline} onChange={e => setTaskDeadline(e.target.value)} disabled={isSubmitting} />
+  </div>
+  <div className="w-1/2 flex flex-col gap-1">
+    <label className="text-[10px] font-bold text-[#636e72] dark:text-[#c4c6d0] ml-1">Tingkat Prioritas</label>
+    <select className="w-full p-3 rounded-xl border border-[#c1c7d3] dark:border-[#44474e] bg-[#ffffff] dark:bg-[#1a1c1e] text-[#161d1f] dark:text-[#e2e2e5] focus:outline-[#005da7] text-sm transition-colors" value={taskPriority} onChange={e => setTaskPriority(e.target.value as any)} disabled={isSubmitting}>
+      <option value="Rendah">{t.priority_low}</option>
+      <option value="Sedang">{t.priority_med}</option>
+      <option value="Tinggi">{t.priority_high}</option>
+    </select>
+  </div>
+</div>
               <button type="submit" disabled={isSubmitting} className="w-full mt-2 py-3 bg-[#005da7] text-white font-bold rounded-xl active:scale-95 transition-all disabled:opacity-70">
                 {isSubmitting ? t.saving : t.save_task}
               </button>
