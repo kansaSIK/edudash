@@ -275,28 +275,31 @@ export default function Schedules({
 
   const handleDeleteSchedule = async (id: string) => {
     setActiveMenuId(null);
-    if (!window.confirm(t.confirm_del_class)) return;
-
-    try {
-      const { error } = await supabase.from('schedules').delete().eq('id', id);
-      if (error) throw error;
-      fetchSchedules(selectedDay);
-    } catch (error: any) {
-      alert(t.err_del_class + error.message);
-    }
+    // Beri sedikit waktu agar UI tertutup sebelum alert muncul
+    setTimeout(async () => {
+      if (!window.confirm(t.confirm_del_class)) return;
+      try {
+        const { error } = await supabase.from('schedules').delete().eq('id', id);
+        if (error) throw error;
+        fetchSchedules(selectedDay);
+      } catch (error: any) {
+        alert(t.err_del_class + error.message);
+      }
+    }, 50);
   };
 
   const handleDeleteEvent = async (id: string, isDone: boolean = false) => {
     setActiveMenuId(null);
-    if (!isDone && !window.confirm(t.confirm_del_event)) return;
-
-    try {
-      const { error } = await supabase.from('events').delete().eq('id', id);
-      if (error) throw error;
-      fetchEvents();
-    } catch (error: any) {
-      alert(t.err_del_event + error.message);
-    }
+    setTimeout(async () => {
+      if (!isDone && !window.confirm(t.confirm_del_event)) return;
+      try {
+        const { error } = await supabase.from('events').delete().eq('id', id);
+        if (error) throw error;
+        fetchEvents();
+      } catch (error: any) {
+        alert(t.err_del_event + error.message);
+      }
+    }, 50);
   };
 
   const openEditSchedule = (sched: Schedule) => {
@@ -344,7 +347,6 @@ export default function Schedules({
   };
 
   return (
-    // 1. PEMBUNGKUS UTAMA: w-full tanpa p-4 agar menyentuh sisi layar penuh
     <div className="w-full bg-[#f8f9fa] dark:bg-[#1a1c1e] text-[#161d1f] dark:text-[#e2e2e5] font-body-main antialiased transition-colors duration-300 pb-10">
       
       <style dangerouslySetInnerHTML={{
@@ -362,7 +364,6 @@ export default function Schedules({
         <div className="fixed inset-0 z-30" onClick={() => setActiveMenuId(null)}></div>
       )}
 
-      {/* 2. HEADER: sticky top-0 dan z-40 agar selalu di atas */}
       <header className="flex justify-between items-center px-[20px] py-[16px] w-full bg-[#f8f9fa] dark:bg-[#1a1c1e] sticky top-0 z-40 border-b border-[#e9ecef]/50 dark:border-[#44474e]/50 transition-colors duration-300">
         <div className="flex items-center gap-[8px]">
           <button onClick={onNavigateHome} className="hover:bg-[#eef5f7] dark:hover:bg-[#44474e] transition-colors rounded-full p-1 text-[#005da7] dark:text-[#a4c9ff] flex items-center justify-center -ml-1">
@@ -370,7 +371,6 @@ export default function Schedules({
           </button>
           <h1 className="font-bold text-[20px] text-[#005da7] dark:text-[#a4c9ff]">{t.title}</h1>
         </div>
-
         <div className="flex items-center gap-1">
           <button onClick={onNavigateNotification} className="hover:bg-[#eef5f7] dark:hover:bg-[#44474e] transition-colors rounded-full p-2 text-[#005da7] dark:text-[#a4c9ff] flex items-center justify-center -mr-2" aria-label="Notifikasi">
             <span className="material-symbols-outlined text-[24px]">notifications</span>
@@ -378,7 +378,6 @@ export default function Schedules({
         </div>
       </header>
 
-      {/* 3. KONTEN: padding px-[20px] agar konten tetap rapi tidak menabrak layar */}
       <main className="w-full px-[20px] py-[20px] flex flex-col gap-[20px]">
         
         <div className="flex bg-[#e9ecef]/60 dark:bg-[#2b2d30] p-1 rounded-xl shadow-inner w-full transition-colors duration-300">
@@ -426,7 +425,8 @@ export default function Schedules({
                 </div>
               ) : (
                 schedules.map((schedule, index) => (
-                  <div key={schedule.id} className="relative z-10 flex gap-[12px] items-start">
+                  // LOGIC FIX: Merubah z-index card menjadi z-40 saat diedit agar muncul di atas backdrop
+                  <div key={schedule.id} className={`relative flex gap-[12px] items-start ${activeMenuId === schedule.id ? 'z-40' : 'z-10'}`}>
                     <div className="w-[70px] shrink-0 text-right pt-1 pr-1">
                       <p className="font-bold text-[14px] text-[#161d1f] dark:text-[#e2e2e5]">{schedule.start_time.substring(0, 5)}</p>
                       <p className="font-normal text-[12px] text-[#636e72] dark:text-[#c4c6d0]">{schedule.end_time.substring(0, 5)}</p>
@@ -440,7 +440,11 @@ export default function Schedules({
 
                         <div className="relative">
                           <button 
-                            onClick={() => setActiveMenuId(activeMenuId === schedule.id ? null : schedule.id)}
+                            // LOGIC FIX: Tambahkan e.stopPropagation()
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setActiveMenuId(activeMenuId === schedule.id ? null : schedule.id);
+                            }}
                             className="absolute -top-1 -right-1 p-1 hover:bg-[#e9ecef] dark:hover:bg-[#44474e] rounded-full transition-colors flex items-center justify-center cursor-pointer"
                           >
                             <span className="material-symbols-outlined text-[#636e72] dark:text-[#c4c6d0] text-[20px]">more_vert</span>
@@ -448,10 +452,16 @@ export default function Schedules({
 
                           {activeMenuId === schedule.id && (
                             <div className="absolute right-0 top-7 w-[120px] bg-white dark:bg-[#1a1c1e] rounded-xl shadow-[0px_4px_12px_rgba(0,0,0,0.15)] dark:shadow-none border border-[#e9ecef] dark:border-[#44474e] overflow-hidden flex flex-col py-1 z-40 transition-colors duration-300">
-                              <button onClick={() => openEditSchedule(schedule)} className="flex items-center gap-2 px-3 py-2 hover:bg-[#f8f9fa] dark:hover:bg-[#2b2d30] text-[13px] text-[#161d1f] dark:text-[#e2e2e5] font-medium text-left">
+                              <button 
+                                onClick={(e) => { e.stopPropagation(); openEditSchedule(schedule); }} 
+                                className="flex items-center gap-2 px-3 py-2 hover:bg-[#f8f9fa] dark:hover:bg-[#2b2d30] text-[13px] text-[#161d1f] dark:text-[#e2e2e5] font-medium text-left"
+                              >
                                 <span className="material-symbols-outlined text-[16px] text-[#005da7] dark:text-[#a4c9ff]">edit</span> {t.menu_edit}
                               </button>
-                              <button onClick={() => handleDeleteSchedule(schedule.id)} className="flex items-center gap-2 px-3 py-2 hover:bg-[#fff0f0] dark:hover:bg-[#93000a]/20 text-[13px] text-[#d63031] dark:text-[#ffb4ab] font-medium text-left">
+                              <button 
+                                onClick={(e) => { e.stopPropagation(); handleDeleteSchedule(schedule.id); }} 
+                                className="flex items-center gap-2 px-3 py-2 hover:bg-[#fff0f0] dark:hover:bg-[#93000a]/20 text-[13px] text-[#d63031] dark:text-[#ffb4ab] font-medium text-left"
+                              >
                                 <span className="material-symbols-outlined text-[16px]">delete</span> {t.menu_delete}
                               </button>
                             </div>
@@ -486,7 +496,8 @@ export default function Schedules({
               events.map((evt) => {
                 const { day, month } = formatTanggalEvent(evt.event_date);
                 return (
-                  <div key={evt.id} className="flex gap-[12px] items-start group relative">
+                  // LOGIC FIX: Merubah z-index card
+                  <div key={evt.id} className={`flex gap-[12px] items-start group relative ${activeMenuId === evt.id ? 'z-40' : 'z-10'}`}>
                     <div className="w-[50px] shrink-0 text-center flex flex-col items-center justify-center pt-2">
                       <span className="font-bold text-[20px] text-[#161d1f] dark:text-[#e2e2e5] leading-none">{day}</span>
                       <span className="font-semibold text-[11px] text-[#005da7] dark:text-[#a4c9ff] uppercase">{month}</span>
@@ -498,7 +509,11 @@ export default function Schedules({
 
                         <div className="relative">
                           <button 
-                            onClick={() => setActiveMenuId(activeMenuId === evt.id ? null : evt.id)}
+                            // LOGIC FIX: Tambahkan e.stopPropagation()
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setActiveMenuId(activeMenuId === evt.id ? null : evt.id);
+                            }}
                             className="absolute -top-1 -right-1 p-1 hover:bg-[#e9ecef] dark:hover:bg-[#44474e] rounded-full transition-colors flex items-center justify-center cursor-pointer"
                           >
                             <span className="material-symbols-outlined text-[#636e72] dark:text-[#c4c6d0] text-[20px]">more_vert</span>
@@ -506,14 +521,23 @@ export default function Schedules({
 
                           {activeMenuId === evt.id && (
                             <div className="absolute right-0 top-7 w-[130px] bg-white dark:bg-[#1a1c1e] rounded-xl shadow-[0px_4px_12px_rgba(0,0,0,0.15)] dark:shadow-none border border-[#e9ecef] dark:border-[#44474e] overflow-hidden flex flex-col py-1 z-40 transition-colors duration-300">
-                              <button onClick={() => handleDeleteEvent(evt.id, true)} className="flex items-center gap-2 px-3 py-2 hover:bg-[#e6f4ea] dark:hover:bg-[#00837c]/20 text-[13px] text-[#00837c] dark:text-[#7cf6ec] font-medium text-left">
+                              <button 
+                                onClick={(e) => { e.stopPropagation(); handleDeleteEvent(evt.id, true); }} 
+                                className="flex items-center gap-2 px-3 py-2 hover:bg-[#e6f4ea] dark:hover:bg-[#00837c]/20 text-[13px] text-[#00837c] dark:text-[#7cf6ec] font-medium text-left"
+                              >
                                 <span className="material-symbols-outlined text-[16px]">check_circle</span> {t.menu_done}
                               </button>
                               <div className="h-[1px] bg-[#e9ecef] dark:bg-[#44474e] my-1"></div>
-                              <button onClick={() => openEditEvent(evt)} className="flex items-center gap-2 px-3 py-2 hover:bg-[#f8f9fa] dark:hover:bg-[#2b2d30] text-[13px] text-[#161d1f] dark:text-[#e2e2e5] font-medium text-left">
+                              <button 
+                                onClick={(e) => { e.stopPropagation(); openEditEvent(evt); }} 
+                                className="flex items-center gap-2 px-3 py-2 hover:bg-[#f8f9fa] dark:hover:bg-[#2b2d30] text-[13px] text-[#161d1f] dark:text-[#e2e2e5] font-medium text-left"
+                              >
                                 <span className="material-symbols-outlined text-[16px] text-[#005da7] dark:text-[#a4c9ff]">edit</span> {t.menu_edit}
                               </button>
-                              <button onClick={() => handleDeleteEvent(evt.id, false)} className="flex items-center gap-2 px-3 py-2 hover:bg-[#fff0f0] dark:hover:bg-[#93000a]/20 text-[13px] text-[#d63031] dark:text-[#ffb4ab] font-medium text-left">
+                              <button 
+                                onClick={(e) => { e.stopPropagation(); handleDeleteEvent(evt.id, false); }} 
+                                className="flex items-center gap-2 px-3 py-2 hover:bg-[#fff0f0] dark:hover:bg-[#93000a]/20 text-[13px] text-[#d63031] dark:text-[#ffb4ab] font-medium text-left"
+                              >
                                 <span className="material-symbols-outlined text-[16px]">delete</span> {t.menu_delete}
                               </button>
                             </div>
@@ -540,7 +564,7 @@ export default function Schedules({
         )}
       </main>
 
-      {/* FAB (Tombol Mengapung): fixed agar tidak ikut tenggelam */}
+      {/* FAB */}
       <button 
         onClick={() => { resetForms(); setIsModalOpen(true); }}
         className="fixed bottom-[90px] right-[20px] w-[56px] h-[56px] bg-[#005da7] dark:bg-[#a4c9ff] text-[#ffffff] dark:text-[#00315b] rounded-2xl shadow-[0px_10px_30px_rgba(0,93,167,0.3)] dark:shadow-none flex items-center justify-center active:scale-95 transition-transform z-40 hover:bg-[#004b87] dark:hover:bg-[#82b1ff]"
@@ -548,7 +572,7 @@ export default function Schedules({
         <span className="material-symbols-outlined text-[24px]">add</span>
       </button>
 
-      {/* MODAL: fixed inset-0 z-[999] agar langsung menutupi seluruh layar dan tidak perlu scroll */}
+      {/* MODAL */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-[#161d1f]/60 z-[999] flex flex-col justify-end">
           <div className="bg-[#ffffff] dark:bg-[#2b2d30] w-full rounded-t-3xl p-6 flex flex-col gap-4 animate-[fadeInUp_0.3s_ease-out] transition-colors duration-300">
