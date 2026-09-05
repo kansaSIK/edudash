@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import type { Session } from '@supabase/supabase-js'; // Import tipe data Session
+import type { Session } from '@supabase/supabase-js'; 
 import { supabase } from './lib/supabase';
 
 // Import Semua Halaman
@@ -42,7 +42,6 @@ export default function App() {
     setActivePage('home');
   };
 
-  // Objek navigasi untuk menghindari prop drilling yang berulang
   const navProps = {
     onNavigateHome: () => setActivePage('home'),
     onNavigateTask: () => setActivePage('tasks'),
@@ -54,13 +53,11 @@ export default function App() {
 
   // --- EFFECTS ---
   useEffect(() => {
-    // 1. Cek sesi aktif Supabase
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setTimeout(() => setIsCheckingSession(false), 2500);
     });
 
-    // 2. Pantau perubahan auth secara real-time
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
     });
@@ -139,12 +136,29 @@ export default function App() {
     }
   };
 
- // --- PERBAIKAN: STRUKTUR UTAMA DENGAN MENU BAWAH ---
   return (
     <PreferencesProvider>
-      {/* Background utama sekarang mengikuti tema (Terang/Gelap) */}
       <div className="flex flex-col h-[100dvh] w-full bg-[#f8f9fa] dark:bg-[#1a1c1e] text-[#161d1f] dark:text-[#e2e2e5] overflow-hidden relative transition-colors duration-300">
         
+        {/* CSS GLOBAL UNTUK MENCEGAH TEKS DIBLOK & ZOOM DI SELURUH APLIKASI */}
+        <style dangerouslySetInnerHTML={{
+          __html: `
+            body { 
+              -webkit-user-select: none !important;
+              -ms-user-select: none !important;
+              user-select: none !important;
+              -webkit-touch-callout: none !important;
+              touch-action: manipulation !important;
+            }
+
+            input, textarea, select {
+              -webkit-user-select: auto !important;
+              -ms-user-select: auto !important;
+              user-select: auto !important;
+            }
+          `
+        }} />
+
         {/* AREA KONTEN */}
         <main className="flex-1 overflow-y-auto pb-[90px] w-full no-scrollbar">
           {renderActivePage()}
@@ -196,8 +210,6 @@ export default function App() {
   );
 }
 
-// ============================================================================
-// KOMPONEN SPLASH SCREEN (Biarkan ini tetap di bawah)
 // ============================================================================
 // KOMPONEN SPLASH SCREEN
 // ============================================================================
