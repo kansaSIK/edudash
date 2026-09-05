@@ -347,15 +347,37 @@ export default function Schedules({
     <div className="w-full bg-[#f8f9fa] dark:bg-[#1a1c1e] text-[#161d1f] dark:text-[#e2e2e5] font-body-main antialiased transition-colors duration-300 pb-10">
       
       <style dangerouslySetInnerHTML={{
-        __html: `
-          @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap');
-          @import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap');
-          body { font-family: 'Plus Jakarta Sans', sans-serif; }
-          .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
-          .no-scrollbar::-webkit-scrollbar { display: none; }
-          .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        `
-      }} />
+  __html: `
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap');
+    
+    body { 
+      font-family: 'Plus Jakarta Sans', sans-serif; 
+      
+      /* MENCEGAH TEKS DIBLOK (HIGHLIGHT) */
+      -webkit-user-select: none; /* Safari */
+      -ms-user-select: none; /* IE 10 and IE 11 */
+      user-select: none; /* Standard */
+      
+      /* Mencegah menu pop-up saat ditahan lama (Long Press) di iOS/Android */
+      -webkit-touch-callout: none; 
+      
+      /* Mencegah zoom otomatis saat tap dua kali (Double-tap to zoom) */
+      touch-action: manipulation; 
+    }
+
+    /* PENGECUALIAN: Izinkan teks diblok HANYA pada input form agar user tetap bisa mengetik normal */
+    input, textarea, select {
+      -webkit-user-select: auto !important;
+      -ms-user-select: auto !important;
+      user-select: auto !important;
+    }
+
+    .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  `
+}} />
 
       {/* Backdrop z-40 agar menutupi elemen lain tapi tetap di bawah baris yang aktif */}
       {activeMenuId && (
