@@ -413,7 +413,9 @@ export default function Home({
                         {task.subject}
                       </span>
                       <h4 className="font-bold text-[14px] text-[#161d1f] dark:text-[#e2e2e5]">{task.title}</h4>
-                      <p className="font-normal text-[12px] text-[#ff6b6b] dark:text-[#ffb4ab] mt-[2px]">Tenggat: {task.deadline}</p>
+                     <p className="font-normal text-[12px] text-[#ff6b6b] dark:text-[#ffb4ab] mt-[2px]">
+  Tenggat: {new Date(task.deadline).toLocaleDateString(lang === 'id' ? 'id-ID' : 'en-US', { day: 'numeric', month: 'short', year: 'numeric' })}
+</p>
                     </div>
                     <button 
                       onClick={() => toggleTaskCompletion(task.id, task.is_completed)}
