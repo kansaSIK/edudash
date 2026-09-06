@@ -56,6 +56,8 @@ const dict = {
     task_title: "Judul Tugas (cth: Laporan Keamanan)",
     subject: "Mata Pelajaran (cth: Jaringan)",
     notes: "Catatan tambahan...",
+    deadline_label: "Deadline",
+    priority_label: "Tingkat Prioritas",
     priority_low: "Prioritas: Rendah",
     priority_med: "Prioritas: Sedang",
     priority_high: "Prioritas: Tinggi",
@@ -90,6 +92,8 @@ const dict = {
     task_title: "Task Title (e.g., Security Report)",
     subject: "Subject (e.g., Networking)",
     notes: "Additional notes...",
+    deadline_label: "Deadline",
+    priority_label: "Priority Level",
     priority_low: "Priority: Low",
     priority_med: "Priority: Medium",
     priority_high: "Priority: High",
@@ -437,20 +441,20 @@ export default function Home({
               <input required placeholder={t.task_title} className="w-full p-3 rounded-xl border border-[#c1c7d3] dark:border-[#44474e] bg-[#ffffff] dark:bg-[#1a1c1e] text-[#161d1f] dark:text-[#e2e2e5] focus:outline-[#005da7] text-sm" value={taskTitle} onChange={e => setTaskTitle(e.target.value)} disabled={isSubmittingTask} />
               <input required placeholder={t.subject} className="w-full p-3 rounded-xl border border-[#c1c7d3] dark:border-[#44474e] bg-[#ffffff] dark:bg-[#1a1c1e] text-[#161d1f] dark:text-[#e2e2e5] focus:outline-[#005da7] text-sm" value={taskSubject} onChange={e => setTaskSubject(e.target.value)} disabled={isSubmittingTask} />
               <textarea placeholder={t.notes} className="w-full p-3 rounded-xl border border-[#c1c7d3] dark:border-[#44474e] bg-[#ffffff] dark:bg-[#1a1c1e] text-[#161d1f] dark:text-[#e2e2e5] focus:outline-[#005da7] text-sm h-20" value={taskNote} onChange={e => setTaskNote(e.target.value)} disabled={isSubmittingTask} />
-             <div className="flex gap-3">
-  <div className="w-1/2 flex flex-col gap-1">
-    <label className="text-[10px] font-bold text-[#636e72] dark:text-[#c4c6d0] ml-1">Deadline</label>
-    <input required type="date" className="w-full p-3 rounded-xl border border-[#c1c7d3] dark:border-[#44474e] bg-[#ffffff] dark:bg-[#1a1c1e] text-[#161d1f] dark:text-[#e2e2e5] focus:outline-[#005da7] text-sm transition-colors" value={taskDeadline} onChange={e => setTaskDeadline(e.target.value)} disabled={isSubmittingTask} />
-  </div>
-  <div className="w-1/2 flex flex-col gap-1">
-    <label className="text-[10px] font-bold text-[#636e72] dark:text-[#c4c6d0] ml-1">Tingkat Prioritas</label>
-    <select className="w-full p-3 rounded-xl border border-[#c1c7d3] dark:border-[#44474e] bg-[#ffffff] dark:bg-[#1a1c1e] text-[#161d1f] dark:text-[#e2e2e5] focus:outline-[#005da7] text-sm transition-colors" value={taskPriority} onChange={e => setTaskPriority(e.target.value as any)} disabled={isSubmittingTask}>
-      <option value="Rendah">{t.priority_low}</option>
-      <option value="Sedang">{t.priority_med}</option>
-      <option value="Tinggi">{t.priority_high}</option>
-    </select>
-  </div>
-</div>
+              <div className="flex gap-3">
+                <div className="w-1/2 flex flex-col gap-1">
+                  <label className="text-[10px] font-bold text-[#636e72] dark:text-[#c4c6d0] ml-1">{t.deadline_label}</label>
+                  <input required type="date" className="w-full p-3 rounded-xl border border-[#c1c7d3] dark:border-[#44474e] bg-[#ffffff] dark:bg-[#1a1c1e] text-[#161d1f] dark:text-[#e2e2e5] focus:outline-[#005da7] text-sm transition-colors" value={taskDeadline} onChange={e => setTaskDeadline(e.target.value)} disabled={isSubmittingTask} />
+                </div>
+                <div className="w-1/2 flex flex-col gap-1">
+                  <label className="text-[10px] font-bold text-[#636e72] dark:text-[#c4c6d0] ml-1">{t.priority_label}</label>
+                  <select className="w-full p-3 rounded-xl border border-[#c1c7d3] dark:border-[#44474e] bg-[#ffffff] dark:bg-[#1a1c1e] text-[#161d1f] dark:text-[#e2e2e5] focus:outline-[#005da7] text-sm transition-colors" value={taskPriority} onChange={e => setTaskPriority(e.target.value as any)} disabled={isSubmittingTask}>
+                    <option value="Rendah">{t.priority_low}</option>
+                    <option value="Sedang">{t.priority_med}</option>
+                    <option value="Tinggi">{t.priority_high}</option>
+                  </select>
+                </div>
+              </div>
               <button type="submit" disabled={isSubmittingTask} className="w-full mt-2 py-3 bg-[#005da7] text-white font-bold rounded-xl active:scale-95 transition-all disabled:opacity-70">
                 {isSubmittingTask ? t.saving : t.save_task}
               </button>
