@@ -28,7 +28,6 @@ const dict = {
     loading: "Memuat profil...",
     account: "Akun",
     editProfile: "Edit Profil",
-    changePassword: "Ubah Password",
     preferences: "Preferensi",
     notif: "Notifikasi",
     theme: "Tampilan",
@@ -49,13 +48,6 @@ const dict = {
     selectTheme: "Pilih Tampilan",
     selectLang: "Pilih Bahasa",
     close: "Tutup",
-    old_pass: "Password Lama",
-    new_pass: "Password Baru",
-    confirm_pass: "Konfirmasi Password",
-    pass_not_match: "Oops! Password baru dan konfirmasi tidak cocok.",
-    old_pass_err: "Password lama yang Anda masukkan salah!",
-    pass_success: "Password berhasil diubah!",
-    pass_err: "Gagal mengubah password: ",
     about_title: "Tentang EduDash",
     about_desc: "EduDash adalah aplikasi manajemen waktu dan tugas yang dirancang khusus untuk membantu pelajar mengorganisir jadwal pelajaran, memantau tenggat waktu tugas, dan meningkatkan produktivitas belajar secara efisien.",
     version: "Versi 1.0.0",
@@ -66,7 +58,6 @@ const dict = {
     loading: "Loading profile...",
     account: "Account",
     editProfile: "Edit Profile",
-    changePassword: "Change Password",
     preferences: "Preferences",
     notif: "Notifications",
     theme: "Theme",
@@ -87,13 +78,6 @@ const dict = {
     selectTheme: "Select Theme",
     selectLang: "Select Language",
     close: "Close",
-    old_pass: "Current Password",
-    new_pass: "New Password",
-    confirm_pass: "Confirm Password",
-    pass_not_match: "Oops! New passwords do not match.",
-    old_pass_err: "The current password you entered is incorrect!",
-    pass_success: "Password changed successfully!",
-    pass_err: "Failed to change password: ",
     about_title: "About EduDash",
     about_desc: "EduDash is a time and task management application specifically designed to help students organize class schedules, track assignment deadlines, and improve learning productivity efficiently.",
     version: "Version 1.0.0",
@@ -124,23 +108,12 @@ export default function Profil({
   const [isThemeModalOpen, setIsThemeModalOpen] = useState<boolean>(false);
   const [isLangModalOpen, setIsLangModalOpen] = useState<boolean>(false);
   const [isAboutModalOpen, setIsAboutModalOpen] = useState<boolean>(false);
-  const [isPasswordModalOpen, setIsPasswordModalOpen] = useState<boolean>(false);
+  const [isPreviewOpen, setIsPreviewOpen] = useState<boolean>(false); // Modal Preview Foto
   
   const [editName, setEditName] = useState<string>('');
   const [editSchool, setEditSchool] = useState<string>('');
   const [editBio, setEditBio] = useState<string>('');
   const [isSaving, setIsSaving] = useState<boolean>(false);
-  
-  // --- STATE PASSWORD ---
-  const [oldPassword, setOldPassword] = useState<string>('');
-  const [newPassword, setNewPassword] = useState<string>('');
-  const [confirmPassword, setConfirmPassword] = useState<string>('');
-  const [isUpdatingPassword, setIsUpdatingPassword] = useState<boolean>(false);
-  
-  // State ikon mata
-  const [showOldPassword, setShowOldPassword] = useState<boolean>(false);
-  const [showNewPassword, setShowNewPassword] = useState<boolean>(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState<boolean>(false);
 
   const [isUploadingAvatar, setIsUploadingAvatar] = useState<boolean>(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -280,39 +253,6 @@ export default function Profil({
     }
   };
 
-  const handleChangePasswordSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (newPassword !== confirmPassword) {
-      alert(t.pass_not_match);
-      return;
-    }
-    
-    setIsUpdatingPassword(true);
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user?.email) {
-        const { error: verifyError } = await supabase.auth.signInWithPassword({
-          email: user.email,
-          password: oldPassword,
-        });
-        if (verifyError) throw new Error(t.old_pass_err); 
-      }
-
-      const { error: updateError } = await supabase.auth.updateUser({ password: newPassword });
-      if (updateError) throw updateError;
-      
-      alert(t.pass_success);
-      setIsPasswordModalOpen(false);
-      setOldPassword('');
-      setNewPassword('');
-      setConfirmPassword('');
-    } catch (err: any) {
-      alert(t.pass_err + (err.message === t.old_pass_err ? err.message : "Sistem gagal memproses."));
-    } finally {
-      setIsUpdatingPassword(false);
-    }
-  };
-
   const handleSignOut = async () => {
     if (window.confirm(lang === 'id' ? 'Apakah Anda yakin ingin keluar?' : 'Are you sure you want to sign out?')) {
       await supabase.auth.signOut();
@@ -327,7 +267,6 @@ export default function Profil({
 
   // --- RENDER UTAMA ---
   return (
-    // PERBAIKAN: Hanya w-full biasa agar App.tsx yang mengatur scroll utamanya!
     <div className="w-full bg-[#f8f9fa] dark:bg-[#1a1c1e] text-[#161d1f] dark:text-[#e2e2e5] font-body-main antialiased transition-colors duration-300 pb-10">
       
       <style dangerouslySetInnerHTML={{
@@ -357,14 +296,30 @@ export default function Profil({
             <div className="px-[20px] pb-[24px] pt-[16px] flex flex-col items-center border-b border-[#e9ecef] dark:border-[#44474e]">
               <input type="file" accept="image/*" className="hidden" ref={fileInputRef} onChange={handleAvatarChange} />
               
-              <div className="relative mb-4">
-                <img src={displayAvatar} alt="Avatar" className={`w-[100px] h-[100px] rounded-full object-cover border-4 border-[#ffffff] dark:border-[#2b2d30] shadow-sm bg-[#eef5f7] ${isUploadingAvatar ? 'opacity-50' : ''}`} />
+              <div className="relative mb-4 inline-block">
+                {/* --- FOTO PROFIL BISA DIKLIK UNTUK PREVIEW --- */}
+                <div 
+                  onClick={() => setIsPreviewOpen(true)}
+                  className={`w-[100px] h-[100px] rounded-full overflow-hidden border-4 border-[#ffffff] dark:border-[#2b2d30] shadow-sm cursor-pointer active:scale-95 transition-transform ${isUploadingAvatar ? 'opacity-50' : ''}`}
+                >
+                  <img src={displayAvatar} alt="Avatar" className="w-full h-full object-cover bg-[#eef5f7]" />
+                </div>
+                
                 {isUploadingAvatar && (
-                  <span className="absolute inset-0 flex items-center justify-center">
+                  <span className="absolute inset-0 flex items-center justify-center pointer-events-none">
                     <span className="material-symbols-outlined animate-spin text-[#005da7]">progress_activity</span>
                   </span>
                 )}
-                <button onClick={() => fileInputRef.current?.click()} disabled={isUploadingAvatar} className="absolute bottom-0 right-0 bg-[#005da7] dark:bg-[#a4c9ff] text-[#ffffff] dark:text-[#00315b] rounded-full p-[6px] shadow-md flex items-center justify-center">
+                
+                {/* --- TOMBOL KAMERA UNTUK UBAH FOTO --- */}
+                <button 
+                  onClick={(e) => {
+                    e.stopPropagation(); // Mencegah modal preview terbuka saat klik icon kamera
+                    if (!isUploadingAvatar) fileInputRef.current?.click();
+                  }} 
+                  disabled={isUploadingAvatar} 
+                  className="absolute bottom-0 right-0 bg-[#005da7] dark:bg-[#a4c9ff] text-[#ffffff] dark:text-[#00315b] rounded-full p-[6px] shadow-md flex items-center justify-center hover:scale-105 transition-transform"
+                >
                   <span className="material-symbols-outlined !text-[16px]">photo_camera</span>
                 </button>
               </div>
@@ -384,7 +339,7 @@ export default function Profil({
               <section className="flex flex-col gap-[8px]">
                 <h3 className="font-bold text-[12px] text-[#005da7] dark:text-[#a4c9ff] uppercase tracking-wider pl-2">{t.account}</h3>
                 <div className="bg-[#ffffff] dark:bg-[#2b2d30] rounded-2xl shadow-sm border border-[#e9ecef] dark:border-[#44474e] overflow-hidden">
-                  <button onClick={() => { setEditName(profile?.full_name || ''); setEditSchool(profile?.school || ''); setEditBio(profile?.bio || ''); setIsEditModalOpen(true); }} className="w-full flex items-center justify-between px-[16px] py-[16px] hover:bg-[#f8f9fa] dark:hover:bg-[#44474e] border-b border-[#e9ecef]/50 dark:border-[#44474e]/50">
+                  <button onClick={() => { setEditName(profile?.full_name || ''); setEditSchool(profile?.school || ''); setEditBio(profile?.bio || ''); setIsEditModalOpen(true); }} className="w-full flex items-center justify-between px-[16px] py-[16px] hover:bg-[#f8f9fa] dark:hover:bg-[#44474e]">
                     <div className="flex items-center gap-[12px]">
                       <div className="bg-[#eef5f7] dark:bg-[#1a1c1e] p-2 rounded-xl text-[#005da7] dark:text-[#a4c9ff]">
                         <span className="material-symbols-outlined">person</span>
@@ -393,15 +348,7 @@ export default function Profil({
                     </div>
                     <span className="material-symbols-outlined text-[#c1c7d3] dark:text-[#8e9099]">chevron_right</span>
                   </button>
-                  <button onClick={() => setIsPasswordModalOpen(true)} className="w-full flex items-center justify-between px-[16px] py-[16px] hover:bg-[#f8f9fa] dark:hover:bg-[#44474e]">
-                    <div className="flex items-center gap-[12px]">
-                      <div className="bg-[#eef5f7] dark:bg-[#1a1c1e] p-2 rounded-xl text-[#005da7] dark:text-[#a4c9ff]">
-                        <span className="material-symbols-outlined">lock</span>
-                      </div>
-                      <span className="text-[14px] font-semibold">{t.changePassword}</span>
-                    </div>
-                    <span className="material-symbols-outlined text-[#c1c7d3] dark:text-[#8e9099]">chevron_right</span>
-                  </button>
+                  {/* BAGIAN GANTI PASSWORD TELAH DIHAPUS DARI SINI */}
                 </div>
               </section>
 
@@ -475,48 +422,9 @@ export default function Profil({
         )}
       </div>
 
-      {/* --- MODALS (Diubah dari absolute menjadi fixed agar menimpa layar dengan utuh) --- */}
+      {/* --- MODALS --- */}
       
-      {/* 1. Modal Password */}
-      {isPasswordModalOpen && (
-        <div className="fixed inset-0 bg-[#161d1f]/60 z-[999] flex flex-col justify-end">
-          <div className="bg-[#ffffff] dark:bg-[#2b2d30] w-full rounded-t-[24px] p-[24px] flex flex-col gap-[16px]">
-            <div className="flex justify-between items-center mb-2">
-              <h2 className="font-bold text-[20px]">{t.changePassword}</h2>
-              <button onClick={() => { setIsPasswordModalOpen(false); setOldPassword(''); setNewPassword(''); setConfirmPassword(''); }} className="text-[#636e72] hover:text-[#161d1f]">
-                <span className="material-symbols-outlined">close</span>
-              </button>
-            </div>
-            
-            <form onSubmit={handleChangePasswordSubmit} className="flex flex-col gap-[12px]">
-              <div className="flex flex-col gap-[4px]">
-                <label className="text-[12px] font-bold">{t.old_pass}</label>
-                <div className="relative w-full">
-                  <input required type={showOldPassword ? "text" : "password"} value={oldPassword} onChange={e => setOldPassword(e.target.value)} disabled={isUpdatingPassword} className="w-full p-3 pr-12 rounded-xl border border-[#c1c7d3] dark:border-[#44474e] bg-[#ffffff] dark:bg-[#1a1c1e] text-[14px]" placeholder="Masukkan password saat ini" />
-                  <button type="button" onClick={() => setShowOldPassword(!showOldPassword)} className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[#636e72]"><span className="material-symbols-outlined text-[20px]">{showOldPassword ? "visibility_off" : "visibility"}</span></button>
-                </div>
-              </div>
-              <div className="flex flex-col gap-[4px]">
-                <label className="text-[12px] font-bold">{t.new_pass}</label>
-                <div className="relative w-full">
-                  <input required type={showNewPassword ? "text" : "password"} minLength={6} value={newPassword} onChange={e => setNewPassword(e.target.value)} disabled={isUpdatingPassword} className="w-full p-3 pr-12 rounded-xl border border-[#c1c7d3] dark:border-[#44474e] bg-[#ffffff] dark:bg-[#1a1c1e] text-[14px]" placeholder="Minimal 6 karakter" />
-                  <button type="button" onClick={() => setShowNewPassword(!showNewPassword)} className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[#636e72]"><span className="material-symbols-outlined text-[20px]">{showNewPassword ? "visibility_off" : "visibility"}</span></button>
-                </div>
-              </div>
-              <div className="flex flex-col gap-[4px]">
-                <label className="text-[12px] font-bold">{t.confirm_pass}</label>
-                <div className="relative w-full">
-                  <input required type={showConfirmPassword ? "text" : "password"} minLength={6} value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} disabled={isUpdatingPassword} className="w-full p-3 pr-12 rounded-xl border border-[#c1c7d3] dark:border-[#44474e] bg-[#ffffff] dark:bg-[#1a1c1e] text-[14px]" placeholder="Ketik ulang password baru" />
-                  <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[#636e72]"><span className="material-symbols-outlined text-[20px]">{showConfirmPassword ? "visibility_off" : "visibility"}</span></button>
-                </div>
-              </div>
-              <button type="submit" disabled={isUpdatingPassword} className="w-full mt-[8px] py-[14px] bg-[#005da7] text-[#ffffff] font-bold text-[14px] rounded-xl flex items-center justify-center">{isUpdatingPassword ? t.saving : t.save}</button>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* 2. Modal Edit Profil */}
+      {/* 1. Modal Edit Profil */}
       {isEditModalOpen && (
         <div className="fixed inset-0 bg-[#161d1f]/60 z-[999] flex flex-col justify-end">
           <div className="bg-[#ffffff] dark:bg-[#2b2d30] w-full rounded-t-[24px] p-[24px] flex flex-col gap-[16px]">
@@ -543,7 +451,7 @@ export default function Profil({
         </div>
       )}
 
-      {/* 3. Modal Theme */}
+      {/* 2. Modal Theme */}
       {isThemeModalOpen && (
         <div className="fixed inset-0 bg-[#161d1f]/60 z-[999] flex flex-col justify-end">
           <div className="bg-[#ffffff] dark:bg-[#2b2d30] w-full rounded-t-[24px] p-[24px] flex flex-col gap-[16px]">
@@ -560,7 +468,7 @@ export default function Profil({
         </div>
       )}
 
-      {/* 4. Modal Bahasa */}
+      {/* 3. Modal Bahasa */}
       {isLangModalOpen && (
         <div className="fixed inset-0 bg-[#161d1f]/60 z-[999] flex flex-col justify-end">
           <div className="bg-[#ffffff] dark:bg-[#2b2d30] w-full rounded-t-[24px] p-[24px] flex flex-col gap-[16px]">
@@ -576,7 +484,7 @@ export default function Profil({
         </div>
       )}
 
-      {/* 5. Modal About */}
+      {/* 4. Modal About */}
       {isAboutModalOpen && (
         <div className="fixed inset-0 bg-[#161d1f]/60 z-[999] flex flex-col justify-end">
           <div className="bg-[#ffffff] dark:bg-[#2b2d30] w-full rounded-t-[24px] p-[24px] flex flex-col gap-[16px]">
@@ -596,6 +504,41 @@ export default function Profil({
               </div>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* 5. MODAL PREVIEW FOTO LENGKAP (ALA INSTAGRAM) */}
+      {isPreviewOpen && (
+        <div 
+          className="fixed inset-0 z-[9999] bg-[#000000]/95 flex flex-col justify-center items-center animate-[fadeIn_0.2s_ease-out]"
+          onClick={() => setIsPreviewOpen(false)} // Klik di mana saja pada background hitam untuk menutup
+        >
+          {/* Header Action di dalam Preview */}
+          <div className="absolute top-0 left-0 w-full p-4 flex justify-between items-center bg-gradient-to-b from-black/60 to-transparent z-10">
+            <span className="text-white font-semibold text-[14px] px-2 tracking-wide">{displayName}</span>
+            <button 
+              onClick={() => setIsPreviewOpen(false)}
+              className="p-2 text-white/80 hover:text-white transition-colors"
+            >
+              <span className="material-symbols-outlined text-[28px]">close</span>
+            </button>
+          </div>
+
+          {/* Gambar Layar Penuh */}
+          <img 
+            src={displayAvatar} 
+            alt="Profile Full Preview" 
+            className="w-full max-w-lg max-h-[100dvh] object-contain transform transition-transform duration-300 animate-[zoomIn_0.2s_ease-out]"
+            onClick={(e) => e.stopPropagation()} // Mencegah modal tertutup kalau gambar yang diklik
+          />
+
+          {/* Style Animasi Khusus Modal */}
+          <style dangerouslySetInnerHTML={{
+            __html: `
+              @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+              @keyframes zoomIn { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+            `
+          }} />
         </div>
       )}
 
